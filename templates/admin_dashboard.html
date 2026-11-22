@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | AutoScholar AI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #173b78;
+            color: white;
+            padding: 22px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout {
+            background: white;
+            color: #173b78;
+            padding: 11px 18px;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #64748b;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #0000000d;
+        }
+
+        .card h3 {
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .card h1 {
+            color: #173b78;
+            font-size: 32px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            color: #173b78;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-form {
+            display: flex;
+            gap: 7px;
+        }
+
+        .action-form button {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .approve {
+            background: #15803d;
+        }
+
+        .reject {
+            background: #dc2626;
+        }
+
+        .flash {
+            padding: 12px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 7px;
+            margin-bottom: 20px;
+        }
+
+        .empty {
+            color: #64748b;
+            padding: 15px 0;
+        }
+
+        @media(max-width: 700px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>AutoScholar AI | Admin</h2>
+
+    <a href="{{ url_for('admin.logout') }}" class="logout">
+        Logout
+    </a>
+    <a href="{{ url_for('admin.students') }}"
+   style="background:#2563eb; color:white; padding:10px 16px;
+   text-decoration:none; border-radius:7px;">
+    Manage Students
+</a>
+<a href="{{ url_for('admin.add_scholarship') }}"
+   style="background:#16a34a; color:white; padding:10px 16px;
+   text-decoration:none; border-radius:7px;">
+    + Add Scholarship
+</a>
+<a href="{{ url_for('admin.manage_scholarships') }}"
+   style="background:#7c3aed; color:white; padding:10px 16px;
+   text-decoration:none; border-radius:7px;">
+    Manage Scholarships
+</a>
+</header>
+
+<div class="container">
+
+    <div class="welcome">
+        <h1>Welcome, {{ admin_name }}!</h1>
+        <p>Administrator Control Center</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Registered Students</h3>
+            <h1>{{ total_students }}</h1>
+        </div>
+
+        <div class="card">
+            <h3>Total Applications</h3>
+            <h1>{{ total_applications }}</h1>
+        </div>
+
+        <div class="card">
+            <h3>Active Scholarships</h3>
+            <h1>{{ total_scholarships }}</h1>
+        </div>
+
+    </div>
+
+    <div class="section">
+
+        <h2>Application Management</h2>
+
+        {% if applications %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Scholarship</th>
+                    <th>Provider</th>
+                    <th>Applied Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for application in applications %}
+
+                <tr>
+
+                    <td>{{ application.student.name }}</td>
+
+                    <td>{{ application.scholarship.title }}</td>
+
+                    <td>{{ application.scholarship.provider }}</td>
+
+                    <td>
+                        {{ application.applied_at.strftime('%d-%m-%Y') }}
+                    </td>
+
+                    <td>
+                        <span class="badge
+                            {% if application.status == 'Approved' %}approved
+                            {% elif application.status == 'Rejected' %}rejected
+                            {% else %}pending
+                            {% endif %}">
+                            {{ application.status }}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        {% if application.status == 'Pending' %}
+
+                        <form class="action-form"
+                              method="POST"
+                              action="{{ url_for('admin.update_application_status', application_id=application.id) }}">
+
+                            <button class="approve"
+                                    type="submit"
+                                    name="status"
+                                    value="Approved">
+                                Approve
+                            </button>
+
+                            <button class="reject"
+                                    type="submit"
+                                    name="status"
+                                    value="Rejected">
+                                Reject
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                            No action needed
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <p class="empty">
+            No applications have been submitted yet.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

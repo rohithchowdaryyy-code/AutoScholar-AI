@@ -1,0 +1,21 @@
+.venv/
+env/
+__pycache__/
+*.pyc
+instance/
+.env
+uploads/*
+!uploads/.gitkeep
+# Backup folders
+app_backup/
+config_folder_backup/
+README_backup/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env.*
+!.env.example

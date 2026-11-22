@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Scholarship | AutoScholar AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            padding: 30px 15px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        h1 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        button, .back-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .back-btn {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .flash {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+        }
+
+        @media(max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Edit Scholarship</h1>
+
+        <p class="subtitle">
+            Update scholarship information and eligibility requirements.
+        </p>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Scholarship Title *</label>
+                    <input type="text" name="title"
+                           value="{{ scholarship.title }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Provider Name *</label>
+                    <input type="text" name="provider"
+                           value="{{ scholarship.provider }}" required>
+                </div>
+
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea name="description">{{ scholarship.description or '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" name="amount" min="0" step="0.01"
+                           value="{{ scholarship.amount or 0 }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="date" name="deadline"
+                           value="{{ scholarship.deadline.strftime('%Y-%m-%d') if scholarship.deadline else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Education</label>
+                    <input type="text" name="education"
+                           value="{{ scholarship.education or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Course</label>
+                    <input type="text" name="course"
+                           value="{{ scholarship.course or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category">
+
+                        <option value="" {% if not scholarship.category %}selected{% endif %}>
+                            Any Category
+                        </option>
+
+                        {% for category in ['General', 'OBC', 'SC', 'ST', 'EWS'] %}
+                            <option value="{{ category }}"
+                                {% if scholarship.category == category %}selected{% endif %}>
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Maximum Annual Family Income (₹)</label>
+                    <input type="number" name="max_income" min="0" step="0.01"
+                           value="{{ scholarship.max_income if scholarship.max_income is not none else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Minimum Percentage</label>
+                    <input type="number" name="min_percentage"
+                           min="0" max="100" step="0.01"
+                           value="{{ scholarship.min_percentage if scholarship.min_percentage is not none else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" name="state"
+                           value="{{ scholarship.state or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Gender Eligibility</label>
+                    <select name="gender">
+
+                        <option value="" {% if not scholarship.gender %}selected{% endif %}>
+                            Any Gender
+                        </option>
+
+                        <option value="Male"
+                            {% if scholarship.gender == 'Male' %}selected{% endif %}>
+                            Male
+                        </option>
+
+                        <option value="Female"
+                            {% if scholarship.gender == 'Female' %}selected{% endif %}>
+                            Female
+                        </option>
+
+                        <option value="Other"
+                            {% if scholarship.gender == 'Other' %}selected{% endif %}>
+                            Other
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group full">
+                    <label>Official Application URL</label>
+                    <input type="url" name="application_url"
+                           value="{{ scholarship.application_url or '' }}"
+                           placeholder="https://example.com">
+                </div>
+
+            </div>
+
+            <div class="buttons">
+
+                <button type="submit">
+                    Save Changes
+                </button>
+
+                <a href="{{ url_for('admin.manage_scholarships') }}"
+                   class="back-btn">
+                    Cancel
+                </a>
+
+            </div

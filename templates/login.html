@@ -1,0 +1,71 @@
+﻿```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | AutoScholar AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/forms.css') }}">
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <div class="auth-card">
+
+            <div class="logo">AutoScholar <span>AI</span></div>
+
+            <h1>Welcome Back!</h1>
+
+            <p class="subtitle">
+                Login to discover scholarships that match your profile.
+            </p>
+
+            {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('auth.login') }}">
+
+                <label>Email Address</label>
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+                <label>Password</label>
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                >
+
+                <button type="submit">Login</button>
+
+            </form>
+
+            <p class="login-link">
+                Don't have an account?
+                <a href="{{ url_for('auth.register') }}">Create Account</a>
+            </p>
+
+            <a class="back-link" href="{{ url_for('home') }}">
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
+```

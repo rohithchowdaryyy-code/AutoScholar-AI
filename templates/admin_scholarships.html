@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Scholarships | AutoScholar AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            padding: 30px 15px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: #1e3a8a;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 7px;
+            text-decoration: none;
+            color: white;
+            background: #1e3a8a;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .active {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        .inactive {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Manage Scholarships</h1>
+
+        <a href="{{ url_for('admin.dashboard') }}" class="btn">
+            Back to Dashboard
+        </a>
+    </header>
+
+    <div class="card">
+
+        <h2 style="margin-bottom: 20px;">
+            Total Scholarships: {{ scholarships|length }}
+        </h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Scholarship</th>
+                    <th>Provider</th>
+                    <th>Amount</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                     <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for scholarship in scholarships %}
+
+                <tr>
+                    <td>{{ scholarship.id }}</td>
+                    <td>{{ scholarship.title }}</td>
+                    <td>{{ scholarship.provider }}</td>
+                    <td>₹{{ scholarship.amount or 0 }}</td>
+                    <td>
+                        {{ scholarship.deadline or "Not specified" }}
+                    </td>
+
+                    <td>
+    {% if scholarship.is_active %}
+        <span class="active">Active</span>
+    {% else %}
+        <span class="inactive">Inactive</span>
+    {% endif %}
+</td>
+<td>
+    <a href="{{ url_for('admin.edit_scholarship', scholarship_id=scholarship.id) }}"
+       style="background:#2563eb; color:white; padding:8px 12px;
+       text-decoration:none; border-radius:5px; display:inline-block;">
+        Edit
+    </a>
+
+    <form method="POST"
+          action="{{ url_for('admin.toggle_scholarship', scholarship_id=scholarship.id) }}"
+          style="display:inline-block;">
+
+        {% if scholarship.is_active %}
+            <button type="submit">Deactivate</button>
+        {% else %}
+            <button type="submit">Activate</button>
+        {% endif %}
+
+    </form>
+</td>
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="7" class="empty">
+                        No scholarships found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

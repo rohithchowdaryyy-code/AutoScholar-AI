@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | AutoScholar AI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            color: #1e293b;
+        }
+
+        header {
+            background: linear-gradient(120deg, #173b78, #2563eb);
+            color: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            font-size: 25px;
+        }
+
+        header h2 span {
+            color: #93c5fd;
+        }
+
+        .logout {
+            background: white;
+            color: #173b78;
+            padding: 11px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .logout:hover {
+            background: #dbeafe;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 40px auto;
+            padding: 0 22px;
+        }
+
+        .welcome {
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #173b78;
+        }
+
+        .welcome p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            background: #173b78;
+            color: white;
+            padding: 13px 22px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: white;
+            padding: 27px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px #0000000a;
+            border-left: 5px solid #2563eb;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 22px #00000012;
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card h1 {
+            font-size: 36px;
+            color: #173b78;
+        }
+
+        .section {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px #0000000a;
+        }
+
+        .section h2 {
+            color: #173b78;
+            margin-bottom: 22px;
+            font-size: 21px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            color: #173b78;
+            background: #f8fafc;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty {
+            color: #64748b;
+            padding: 15px 0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 750px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            header h2 {
+                font-size: 20px;
+            }
+
+            .container {
+                margin: 28px auto;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 24px;
+            }
+
+            .section {
+                padding: 18px;
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 500px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h2>AutoScholar <span>AI</span></h2>
+        <a href="{{ url_for('home') }}"
+   style="background:white; color:#173b78; padding:11px 18px;
+   text-decoration:none; border-radius:7px; font-weight:bold;">
+    ← Back to Home
+</a>
+        <a href="{{ url_for('auth.logout') }}" class="logout">Logout</a>
+    </header>
+
+    <div class="container">
+
+        <div class="welcome">
+            <h1>Welcome, {{ student.name }}! 👋</h1>
+            <p>Track your applications and discover scholarships made for you.</p>
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('scholarship.scholarship_list') }}">
+                🎓 Find Scholarships
+            </a>
+
+            <a href="{{ url_for('student.profile') }}">
+                👤 My Profile
+            </a>
+
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Available Scholarships</h3>
+                <h1>{{ total_scholarships }}</h1>
+            </div>
+
+            <div class="card">
+                <h3>My Applications</h3>
+                <h1>{{ total_applications }}</h1>
+            </div>
+
+            <div class="card">
+                <h3>Pending Applications</h3>
+                <h1>{{ pending_applications }}</h1>
+            </div>
+
+        </div>
+
+        <div class="section">
+
+            <h2>My Recent Applications</h2>
+
+            {% if applications %}
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scholarship</th>
+                            <th>Provider</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for application in applications %}
+                            <tr>
+                                <td>{{ application.scholarship.title }}</td>
+                                <td>{{ application.scholarship.provider }}</td>
+                                <td>
+                                    <span class="status
+                                        {% if application.status == 'Approved' %}approved
+                                        {% elif application.status == 'Rejected' %}rejected
+                                        {% else %}pending
+                                        {% endif %}">
+                                        {{ application.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            {% else %}
+
+                <p class="empty">
+                    You haven't applied for any scholarships yet.
+                    Start exploring scholarships that match your profile!
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>
